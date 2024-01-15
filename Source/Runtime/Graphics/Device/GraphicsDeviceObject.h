@@ -6,12 +6,12 @@
 
 class GraphicsDevice;
 
-class RUNTIME_API GraphicsDeviceObject
+class GraphicsDeviceObject
 {
 public:
 	GraphicsDeviceObject() = default;
 	GraphicsDeviceObject(const GraphicsDeviceObject&) = delete;
-	GraphicsDeviceObject& operator=(const GraphicsDeviceObject&) = delete;
+	virtual GraphicsDeviceObject& operator=(const GraphicsDeviceObject&) = delete;
 	virtual ~GraphicsDeviceObject() = default;
 
 	virtual DeviceObjectType GetDeviceType() noexcept = 0;
