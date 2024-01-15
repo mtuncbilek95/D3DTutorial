@@ -31,6 +31,8 @@ public:
 	const std::string& GetEntryPoint() const noexcept { return mEntryPoint; }
 	const std::string& GetShaderName() const noexcept { return mShaderName; }
 
+	ComPtr<ID3DBlob> GetShaderBlob() const noexcept { return mShaderBlob; }
+
 private:
 	ComPtr<ID3D11VertexShader> mVertexShader;
 	ComPtr<ID3D11DomainShader> mDomainShader;

@@ -20,5 +20,6 @@ Window::Window()
 
 void Window::ProcessMessage()
 {
+	glfwSwapBuffers(mWindow);
 	glfwPollEvents();
 }

@@ -40,3 +40,5 @@ void DevLog(LogLevel level, const char* pTitle, const char* pMessage, ...);
 #else
 #define DEV_ASSERT(condition, pTitle, pMessage, ...) (condition)
 #endif
+
+#define FloatMax 3.402823466e+38F

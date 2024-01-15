@@ -17,6 +17,14 @@
 #include <Runtime/Graphics/Shader/Shader.h>
 #include <Runtime/Graphics/Shader/ShaderDesc.h>
 
+#include <Runtime/Graphics/Pipeline/Pipeline.h>
+
+#include <Runtime/Graphics/Sampler/Sampler.h>
+
+#include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
+
+#include <Runtime/Graphics/Command/CommandList.h>
+
 GraphicsDevice::GraphicsDevice(const GraphicsDeviceDesc& desc)
 {
 	DEV_ASSERT(SUCCEEDED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION,
@@ -64,4 +72,51 @@ std::shared_ptr<Shader> GraphicsDevice::CreateShader(const ShaderDesc& desc)
 	mDeviceObjects.push_back(shader);
 
 	return shader;
+}
+
+std::shared_ptr<Pipeline> GraphicsDevice::CreatePipeline(const PipelineDesc& desc)
+{
+	auto pipeline = std::make_shared<Pipeline>(shared_from_this(), desc);
+	mDeviceObjects.push_back(pipeline);
+
+	return pipeline;
+}
+
+std::shared_ptr<Sampler> GraphicsDevice::CreateSampler(const SamplerDesc& desc)
+{
+	auto sampler = std::make_shared<Sampler>(shared_from_this(), desc);
+	mDeviceObjects.push_back(sampler);
+
+	return sampler;
+}
+
+std::shared_ptr<CommandList> GraphicsDevice::CreateCommandList()
+{
+	auto commandList = std::make_shared<CommandList>(shared_from_this());
+	mDeviceObjects.push_back(commandList);
+
+	return commandList;
+}
+
+std::shared_ptr<GraphicsBuffer> GraphicsDevice::CreateGraphicsBuffer(const GraphicsBufferDesc& desc)
+{
+	auto graphicsBuffer = std::make_shared<GraphicsBuffer>(shared_from_this(), desc);
+	mDeviceObjects.push_back(graphicsBuffer);
+
+	return graphicsBuffer;
+}
+
+void GraphicsDevice::ExecuteCommandLists(std::vector<std::shared_ptr<CommandList>> commandLists)
+{
+	for (auto& commandList : commandLists)
+	{
+		commandList->GetDeferredContext()->FinishCommandList(false, commandList->GetCommandList().GetAddressOf());
+		mD3D11ImmediateContext->ExecuteCommandList(commandList->GetCommandList().Get(), false);
+		commandList->ClearCommandList();
+	}
+}
+
+void GraphicsDevice::Present()
+{
+	mSwapchain->Present();
 }
