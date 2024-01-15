@@ -104,7 +104,6 @@ int main()
 	rasterizerDesc.MultisampleEnabled = true;
 	rasterizerDesc.AntialiasedLineEnabled = true;
 
-	// WORKS FINE
 	DepthStencilDesc depthDesc = {};
 	depthDesc.DepthEnable = true;
 	depthDesc.DepthMask = DepthMask::All;
@@ -113,7 +112,6 @@ int main()
 	depthDesc.StencilReadMask = 0xFF;
 	depthDesc.StencilWriteMask = 0xFF;
 
-	// TODO: NEED FIX TARGET BLENDS
 	BlendStateDesc blendDesc = {};
 	blendDesc.AlphaToCoverageEnable = false;
 	blendDesc.IndependentBlendEnable = true;
