@@ -5,6 +5,8 @@ include("${CMAKE_SOURCE_DIR}/Scripts/FetchLibraries.cmake")
 
 # POPULATE 3RD PARTY LIBRARIES
 FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(assimp)
+FetchContent_MakeAvailable(stbi)
 
 # CREATE EXECUTABLE
 file(GLOB_RECURSE SUBDIRECTORIES "${CMAKE_SOURCE_DIR}/Source/Runtime/*.h" "${CMAKE_SOURCE_DIR}/Source/Runtime/*.cpp")
@@ -14,7 +16,16 @@ add_library(Runtime STATIC main.cpp ${SUBDIRECTORIES})
 # INCLUDE DIRECTORIES AND LINK LIBRARIES
 target_include_directories(Runtime PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
+# LINK STBI
+if (stbi_POPULATED) 
+    target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION=1)
+    target_include_directories(Runtime PUBLIC ${stbi_SOURCE_DIR})
+else ()
+    target_compile_definitions(Runtime PUBLIC STB_IMAGE_IMPLEMENTATION=0)
+endif ()
+
 target_link_libraries(Runtime PUBLIC glfw)
+target_link_libraries(Runtime PUBLIC assimp)
 target_link_libraries(Runtime PUBLIC "d3d11.lib")
 target_link_libraries(Runtime PUBLIC "dxgi.lib")
 target_link_libraries(Runtime PUBLIC "d3dcompiler.lib")

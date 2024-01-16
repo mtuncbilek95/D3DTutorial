@@ -33,7 +33,7 @@ std::vector<uint32> indices = {
 int main()
 {
 	auto window = std::make_shared<Window>();
-	auto device = std::make_shared<GraphicsDevice>(GraphicsDeviceDesc());
+	auto device = std::make_shared<GraphicsDevice>();
 
 	SwapchainDesc swapchainDesc = {};
 	swapchainDesc.Window = window;
