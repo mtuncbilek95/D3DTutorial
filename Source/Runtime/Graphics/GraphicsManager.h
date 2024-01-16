@@ -14,7 +14,7 @@ public:
 	}
 	~GraphicsManager() = default;
 
-	std::shared_ptr<GraphicsDevice>& GetMainDevice() const { return mMainDevice; }
+	std::shared_ptr<GraphicsDevice>& GetMainDevice() { return mMainDevice; }
 
 private:
 	std::shared_ptr<GraphicsDevice> mMainDevice;

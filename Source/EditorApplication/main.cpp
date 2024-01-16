@@ -138,7 +138,7 @@ int main()
 
 	GraphicsBufferDesc vertexBufferDesc = {};
 	vertexBufferDesc.Usage = BufferUsage::VERTEX_BUFFER;
-	vertexBufferDesc.SizeInBytes = sizeof(VertexData) * triangle.size();
+	vertexBufferDesc.SizeInBytes = (uint32)(sizeof(VertexData) * triangle.size());
 	vertexBufferDesc.StructureByteStride = sizeof(VertexData);
 	vertexBufferDesc.InitialData = triangle.data();
 	vertexBufferDesc.CPUAccess = BufferCPUAccess::NONE;

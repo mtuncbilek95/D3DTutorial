@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Runtime/Core/Core.h>
-#include <Runtime/Resources/Mesh/MeshDesc.h>
 
 #include <DirectXMath.h>
 using namespace DirectX;

@@ -15,6 +15,8 @@ public:
 	TextureResource& operator=(const TextureResource&) = delete;
 	~TextureResource() = default;
 
+	void AllocateTexture();
+
 	std::shared_ptr<Texture>& GetTexture() { return mTexture; }
 	std::shared_ptr<TextureView>& GetTextureView() { return mTextureView; }
 
