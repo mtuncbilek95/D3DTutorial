@@ -8,6 +8,7 @@
 #include <Runtime/Graphics/Pipeline/Pipeline.h>
 #include <Runtime/Graphics/Sampler/Sampler.h>
 
+#include <Runtime/Graphics/Texture/TextureView.h>
 
 CommandList::CommandList(std::shared_ptr<GraphicsDevice> device)
 {
@@ -81,6 +82,79 @@ void CommandList::BindIndexBuffer(std::shared_ptr<GraphicsBuffer> indexBuffer)
 	mDeferredContext->IASetIndexBuffer(indexBuffer->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
+void CommandList::BindResources(const std::vector<std::shared_ptr<TextureView>>& textureViews, const std::vector<std::shared_ptr<Sampler>>& samplers, const std::vector<std::shared_ptr<GraphicsBuffer>>& constantBuffers, ShaderStage stage)
+{
+	ID3D11ShaderResourceView* srvs[16] = {};
+	ID3D11SamplerState* samplersStates[16] = {};
+	ID3D11Buffer* buffers[16] = {};
+
+	for (uint32 i = 0; i < textureViews.size(); i++)
+	{
+		srvs[i] = textureViews[i]->GetTextureView().Get();
+	}
+
+	for (uint32 i = 0; i < samplers.size(); i++)
+	{
+		samplersStates[i] = samplers[i]->GetSamplerState().Get();
+	}
+
+	for (uint32 i = 0; i < constantBuffers.size(); i++)
+	{
+		buffers[i] = constantBuffers[i]->GetBuffer().Get();
+	}
+
+	switch (stage)
+	{
+	case ShaderStage::VertexShader:
+	{
+		mDeferredContext->VSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->VSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->VSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	case ShaderStage::PixelShader:
+	{
+		mDeferredContext->PSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->PSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->PSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	case ShaderStage::ComputeShader:
+	{
+		mDeferredContext->CSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->CSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->CSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	case ShaderStage::GeometryShader:
+	{
+		mDeferredContext->GSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->GSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->GSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	case ShaderStage::HullShader:
+	{
+		mDeferredContext->HSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->HSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->HSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	case ShaderStage::DomainShader:
+	{
+		mDeferredContext->DSSetShaderResources(0, textureViews.size(), srvs);
+		mDeferredContext->DSSetSamplers(0, samplers.size(), samplersStates);
+		mDeferredContext->DSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		break;
+	}
+	default:
+	{
+		DEV_ASSERT(false, "CommandList", "Invalid shader stage.");
+		break;
+	}
+	}
+}
+
 void CommandList::DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset)
 {
 	mDeferredContext->DrawIndexed(indexCount, indexOffset, vertexOffset);
@@ -88,7 +162,7 @@ void CommandList::DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vert
 
 void CommandList::ClearBuffer(std::shared_ptr<Framebuffer> framebuffer, XMFLOAT3 color)
 {
-	float frameColor[] = {color.x, color.y, color.z, 1.0f};
+	float frameColor[] = { color.x, color.y, color.z, 1.0f };
 	mDeferredContext->ClearRenderTargetView(framebuffer->GetColorTextureView().Get(), frameColor);
 	mDeferredContext->ClearDepthStencilView(framebuffer->GetDepthTextureView().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

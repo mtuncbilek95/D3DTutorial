@@ -3,6 +3,7 @@
 #include <Runtime/Core/Core.h>
 
 #include <Runtime/Graphics/Device/GraphicsDeviceObject.h>
+#include <Runtime/Graphics/Shader/ShaderStage.h>
 
 #include <d3d11.h>
 #include <wrl.h>
@@ -17,6 +18,8 @@ using namespace DirectX;
 class Framebuffer;
 class Pipeline;
 class GraphicsBuffer;
+class TextureView;
+class Sampler;
 
 class CommandList : public GraphicsDeviceObject
 {
@@ -34,7 +37,7 @@ public:
 	void BindViewport(XMUINT2 windowSize);
 	void BindVertexBuffer(const std::vector<std::shared_ptr<GraphicsBuffer>>& vertexBuffer);
 	void BindIndexBuffer(std::shared_ptr<GraphicsBuffer> indexBuffer);
-	void BindResources() {}
+	void BindResources(const std::vector<std::shared_ptr<TextureView>>& textureViews, const std::vector<std::shared_ptr<Sampler>>& samplers, const std::vector<std::shared_ptr<GraphicsBuffer>>& constantBuffers, ShaderStage stage);
 	void DrawIndexed(uint32 indexCount, uint32 indexOffset, uint32 vertexOffset);
 	void ClearBuffer(std::shared_ptr<Framebuffer> framebuffer, XMFLOAT3 color);
 	void UpdateDynamicBuffer(std::shared_ptr<GraphicsBuffer> buffer, void* data, uint32 size);

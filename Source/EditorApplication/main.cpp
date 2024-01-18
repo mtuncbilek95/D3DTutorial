@@ -136,28 +136,6 @@ int main()
 
 	auto pipeline = device->CreatePipeline(pipelineDesc);
 
-	GraphicsBufferDesc vertexBufferDesc = {};
-	vertexBufferDesc.Usage = BufferUsage::VERTEX_BUFFER;
-	vertexBufferDesc.SizeInBytes = (uint32)(sizeof(VertexData) * triangle.size());
-	vertexBufferDesc.StructureByteStride = sizeof(VertexData);
-	vertexBufferDesc.InitialData = triangle.data();
-	vertexBufferDesc.CPUAccess = BufferCPUAccess::NONE;
-	vertexBufferDesc.ResourceUsage = ResourceUsage::DEFAULT;
-	vertexBufferDesc.MiscFlags = 0;
-
-	auto vertexBuffer = device->CreateGraphicsBuffer(vertexBufferDesc);
-
-	GraphicsBufferDesc indexBufferDesc = {};
-	indexBufferDesc.Usage = BufferUsage::INDEX_BUFFER;
-	indexBufferDesc.SizeInBytes = sizeof(uint32) * indices.size();
-	indexBufferDesc.StructureByteStride = sizeof(uint32);
-	indexBufferDesc.InitialData = indices.data();
-	indexBufferDesc.CPUAccess = BufferCPUAccess::NONE;
-	indexBufferDesc.ResourceUsage = ResourceUsage::DEFAULT;
-	indexBufferDesc.MiscFlags = 0;
-
-	auto indexBuffer = device->CreateGraphicsBuffer(indexBufferDesc);
-
 	auto commandList = device->CreateCommandList();
 
 	while (window->IsOpen())
@@ -166,8 +144,8 @@ int main()
 
 		commandList->BindFramebuffer(framebuffer);
 		commandList->BindPipeline(pipeline);
-		commandList->BindVertexBuffer({ vertexBuffer });
-		commandList->BindIndexBuffer(indexBuffer);
+		commandList->BindVertexBuffer({ });
+		commandList->BindIndexBuffer({});
 		commandList->BindViewport(window->GetWindowSize());
 
 		const XMFLOAT3 clearColor = { 0.2f , 0.3f, 0.5f };

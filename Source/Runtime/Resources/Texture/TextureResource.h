@@ -23,7 +23,7 @@ public:
 	uint32& GetWidth() noexcept { return mWidth; }
 	uint32& GetHeight() noexcept { return mHeight; }
 	uint32& GetChannels() noexcept { return mChannels; }
-	uint8* GetPixelData() noexcept { return mPixelData; }
+	uint8** GetPixelData() noexcept { return &mPixelData; }
 
 private:
 	std::shared_ptr<Texture> mTexture;
