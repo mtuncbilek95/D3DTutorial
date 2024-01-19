@@ -1,8 +1,10 @@
 #include "Window.h"
 
+#include <Runtime/Graphics/Swapchain/Swapchain.h>
+
 Window::Window()
 {
-	mWindowSize = { 1280, 720 };
+	mWindowSize = { 1920, 1080 };
 	mPosition = { 0, 0 };
 	mTitle = "Rendering Engine";
 	mIsFullscreen = false;
@@ -20,6 +22,5 @@ Window::Window()
 
 void Window::ProcessMessage()
 {
-	glfwSwapBuffers(mWindow);
 	glfwPollEvents();
 }

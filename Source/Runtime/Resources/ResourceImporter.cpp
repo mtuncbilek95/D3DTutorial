@@ -22,7 +22,7 @@ void ResourceImporter::ReadStaticMeshFile(const std::string& absolutePath, std::
 		return;
 	}
 
-	aiMesh* pMesh = {};
+	aiMesh* pMesh;
 
 	if (scene->HasMeshes())
 		pMesh = scene->mMeshes[0];
@@ -79,7 +79,18 @@ void ResourceImporter::ReadStaticMeshFile(const std::string& absolutePath, std::
 
 void ResourceImporter::ReadTextureFile(const std::string& absolutePath, std::shared_ptr<TextureResource> texture)
 {
-	*texture->GetPixelData() = stbi_load(absolutePath.c_str(), (int*)(texture->GetWidth()), (int*)(texture->GetHeight()), (int*)(texture->GetChannels()), STBI_rgb_alpha);
+	int width, height, channels;
+	stbi_uc* data = stbi_load(absolutePath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+
+	if (!data)
+	{
+		DEV_LOG(TE_FATAL, "ResourceImporter", "Failed to load texture file: %s", absolutePath.c_str());
+		return;
+	}
+
+	texture->SetTexture(data, width, height, channels);
 	
 	texture->AllocateTexture();
+
+	stbi_image_free(data);
 }

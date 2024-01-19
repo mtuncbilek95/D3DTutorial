@@ -79,7 +79,7 @@ void CommandList::BindVertexBuffer(const std::vector<std::shared_ptr<GraphicsBuf
 
 void CommandList::BindIndexBuffer(std::shared_ptr<GraphicsBuffer> indexBuffer)
 {
-	mDeferredContext->IASetIndexBuffer(indexBuffer->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+	mDeferredContext->IASetIndexBuffer(indexBuffer->GetBuffer().Get(), DXGI_FORMAT_R16_UINT, 0);
 }
 
 void CommandList::BindResources(const std::vector<std::shared_ptr<TextureView>>& textureViews, const std::vector<std::shared_ptr<Sampler>>& samplers, const std::vector<std::shared_ptr<GraphicsBuffer>>& constantBuffers, ShaderStage stage)
@@ -107,44 +107,44 @@ void CommandList::BindResources(const std::vector<std::shared_ptr<TextureView>>&
 	{
 	case ShaderStage::VertexShader:
 	{
-		mDeferredContext->VSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->VSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->VSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->VSSetShaderResources(0, (uint32)(textureViews.size()), srvs);
+		mDeferredContext->VSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->VSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	case ShaderStage::PixelShader:
 	{
-		mDeferredContext->PSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->PSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->PSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->PSSetShaderResources(0, (uint32)textureViews.size(), srvs);
+		mDeferredContext->PSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->PSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	case ShaderStage::ComputeShader:
 	{
-		mDeferredContext->CSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->CSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->CSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->CSSetShaderResources(0, (uint32)textureViews.size(), srvs);
+		mDeferredContext->CSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->CSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	case ShaderStage::GeometryShader:
 	{
-		mDeferredContext->GSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->GSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->GSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->GSSetShaderResources(0, (uint32)textureViews.size(), srvs);
+		mDeferredContext->GSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->GSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	case ShaderStage::HullShader:
 	{
-		mDeferredContext->HSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->HSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->HSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->HSSetShaderResources(0, (uint32)textureViews.size(), srvs);
+		mDeferredContext->HSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->HSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	case ShaderStage::DomainShader:
 	{
-		mDeferredContext->DSSetShaderResources(0, textureViews.size(), srvs);
-		mDeferredContext->DSSetSamplers(0, samplers.size(), samplersStates);
-		mDeferredContext->DSSetConstantBuffers(0, constantBuffers.size(), buffers);
+		mDeferredContext->DSSetShaderResources(0, (uint32)textureViews.size(), srvs);
+		mDeferredContext->DSSetSamplers(0, (uint32)samplers.size(), samplersStates);
+		mDeferredContext->DSSetConstantBuffers(0, (uint32)constantBuffers.size(), buffers);
 		break;
 	}
 	default:

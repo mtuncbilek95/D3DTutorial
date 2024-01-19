@@ -23,8 +23,6 @@ public:
 	Texture* GetBackTexture() { return mBackTexture; }
 	virtual DeviceObjectType GetDeviceType() noexcept override { return DeviceObjectType::Swapchain; }
 
-	D3D11_VIEWPORT GetViewport();
-
 private:
 	Texture* mBackTexture;
 	ComPtr<IDXGISwapChain> mSwapchain;

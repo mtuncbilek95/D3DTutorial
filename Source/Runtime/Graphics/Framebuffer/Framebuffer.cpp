@@ -32,7 +32,7 @@ Framebuffer::Framebuffer(std::shared_ptr<GraphicsDevice> device, const Framebuff
 	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthTextureDesc.CPUAccessFlags = 0;
 
-	DEV_ASSERT(SUCCEEDED(device->GetD3D11Device()->CreateTexture2D(&depthTextureDesc, nullptr, mDepthTexture.GetAddressOf())), "Framebuffer", 
+	DEV_ASSERT(SUCCEEDED(device->GetD3D11Device()->CreateTexture2D(&depthTextureDesc, nullptr, mDepthTexture.GetAddressOf())), "Framebuffer",
 		"Failed to create depth texture for Framebuffer.");
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -41,7 +41,7 @@ Framebuffer::Framebuffer(std::shared_ptr<GraphicsDevice> device, const Framebuff
 	dsvDesc.Texture2D.MipSlice = 0;
 
 	DEV_ASSERT(SUCCEEDED(device->GetD3D11Device()->CreateDepthStencilView(mDepthTexture.Get(), &dsvDesc, mDepthTextureView.GetAddressOf())), "Framebuffer",
-				"Failed to create depth stencil view for depth texture.");
+		"Failed to create depth stencil view for depth texture.");
 
 	DEV_LOG(TE_VERBOSE, "Framebuffer", "Created Framebuffer successfully.");
 }

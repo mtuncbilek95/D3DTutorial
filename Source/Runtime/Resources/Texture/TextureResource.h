@@ -25,6 +25,11 @@ public:
 	uint32& GetChannels() noexcept { return mChannels; }
 	uint8** GetPixelData() noexcept { return &mPixelData; }
 
+public:
+	void SetTexture(byte* data, uint32 width, uint32 height, uint32 channels)
+	{
+		mPixelData = data; mWidth = width; mHeight = height; mChannels = channels;
+	}
 private:
 	std::shared_ptr<Texture> mTexture;
 	std::shared_ptr<TextureView> mTextureView;

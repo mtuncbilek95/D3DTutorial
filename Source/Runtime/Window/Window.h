@@ -10,6 +10,7 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 #include <string>
+#include <memory>
 
 class Window
 {
@@ -26,9 +27,8 @@ public:
 	GLFWwindow* GetWindowHandle() noexcept { return mWindow; }
 	HWND GetNativeWindowHandle() noexcept { return glfwGetWin32Window(mWindow); }
 
-
-	 bool IsOpen() const noexcept { return !glfwWindowShouldClose(mWindow); }
-	 bool IsFullscreen() const noexcept { return mIsFullscreen; }
+	bool IsOpen() const noexcept { return !glfwWindowShouldClose(mWindow); }
+	bool IsFullscreen() const noexcept { return mIsFullscreen; }
 private:
 	std::string mTitle;
 	XMINT2 mPosition;

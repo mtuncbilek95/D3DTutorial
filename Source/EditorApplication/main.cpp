@@ -1,160 +1,54 @@
-#include <Runtime/Window/Window.h>
-#include <Runtime/Graphics/Device/GraphicsDevice.h>
-#include <Runtime/Graphics/Swapchain/Swapchain.h>
-#include <Runtime/Graphics/Framebuffer/Framebuffer.h>
+#include <Runtime/Application/Application.h>
 
-#include <Runtime/Graphics/Shader/Shader.h>
-
-#include <Runtime/Graphics/Sampler/Sampler.h>
-#include <Runtime/Graphics/Pipeline/Pipeline.h>
-
-#include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
-
+#include <Runtime/Graphics/GraphicsManager.h>
+#include <Runtime/Window/WindowManager.h>
+#include <Runtime/Application/ApplicationManager.h>
 #include <Runtime/Graphics/Command/CommandList.h>
 
-#include <DirectXMath.h>
+#include <Runtime/World/ObjectPipeline.h>
 
-struct VertexData
-{
-	DirectX::XMFLOAT3 Position;
-	DirectX::XMFLOAT4 Color;
-};
+#include <Runtime/World/Helmet.h>
+#include <Runtime/World/Lantern.h>
 
-std::vector<VertexData> triangle = {
-	{ DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-	{ DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-	{ DirectX::XMFLOAT3(0.5f, -0.5f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
-};
-
-std::vector<uint32> indices = {
-	0, 1, 2
-};
+std::vector<std::shared_ptr<GameObject>> objects;
 
 int main()
 {
-	auto window = std::make_shared<Window>();
-	auto device = std::make_shared<GraphicsDevice>();
+	auto app = ApplicationManager::GetInstance().GetApplication();
+	auto camera = CameraManager::GetInstance().GetCamera();
 
-	SwapchainDesc swapchainDesc = {};
-	swapchainDesc.Window = window;
-	swapchainDesc.SwapchainFormat = TextureFormat::RGBA8_UNSIGNED_NORMALIZED;
-	swapchainDesc.BufferCount = 1;
-	swapchainDesc.TargetFrameRate = 144;
+	auto pipelineObject = std::make_shared<ObjectPipeline>();
 
-	auto swapchain = device->CreateSwapchain(swapchainDesc);
+	auto helmet = std::make_shared<Helmet>();
+	objects.push_back(helmet);
+	auto lantern = std::make_shared<Lantern>();
+	objects.push_back(lantern);
 
-	FramebufferDesc framebufferDesc = {};
-	framebufferDesc.ColorAttachmentFormat = swapchainDesc.SwapchainFormat;
-	framebufferDesc.pColorAttachment = swapchain->GetBackTexture();
-
-	auto framebuffer = device->CreateFramebuffer(framebufferDesc);
-
-	ShaderDesc vertexShaderDesc = {};
-	vertexShaderDesc.Type = ShaderType::VERTEX_SHADER;
-	vertexShaderDesc.EntryPoint = "vs_main";
-	vertexShaderDesc.ShaderName = "ObjectVertexShader";
-	vertexShaderDesc.ShaderModel = "vs_5_0";
-
-	auto vertexShader = device->CreateShader(vertexShaderDesc);
-
-	ShaderDesc pixelShaderDesc = {};
-	pixelShaderDesc.Type = ShaderType::PIXEL_SHADER;
-	pixelShaderDesc.EntryPoint = "ps_main";
-	pixelShaderDesc.ShaderName = "ObjectPixelShader";
-	pixelShaderDesc.ShaderModel = "ps_5_0";
-
-	auto pixelShader = device->CreateShader(pixelShaderDesc);
-
-	SamplerDesc samplerDesc = {};
-	samplerDesc.Filter = SamplerFilter::MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = AddressMode::WRAP;
-	samplerDesc.AddressV = AddressMode::WRAP;
-	samplerDesc.AddressW = AddressMode::WRAP;
-	samplerDesc.SamplerComparison = SamplerComparison::ALWAYS;
-	samplerDesc.MipLODBias = 1.0f;
-	samplerDesc.MinLOD = 0.0f;
-	samplerDesc.MaxLOD = FloatMax;
-	samplerDesc.MaxAnisotropy = 0;
-	samplerDesc.BorderColor[0] = 0.0f;
-	samplerDesc.BorderColor[1] = 0.0f;
-	samplerDesc.BorderColor[2] = 0.0f;
-	samplerDesc.BorderColor[3] = 0.0f;
-
-	auto sampler = device->CreateSampler(samplerDesc);
-
-	InputLayoutDesc inputDesc = {};
-	inputDesc.SemanticNames = { SemanticName::Position, SemanticName::Color };
-	inputDesc.InputFormats = { TextureFormat::RGB32_FLOAT, TextureFormat::RGBA32_FLOAT };
-	inputDesc.SemanticIndices = { 0, 0 };
-	inputDesc.InputSlotIndices = { 0, 0 };
-	inputDesc.AlignedByteOffsets = { D3D11_APPEND_ALIGNED_ELEMENT, D3D11_APPEND_ALIGNED_ELEMENT };
-	inputDesc.SlotClasses = { SlotClass::PerVertexData, SlotClass::PerVertexData };
-	inputDesc.InstanceDataSteps = { 0, 0 };
-	inputDesc.PrimitiveMode = PrimitiveMode::TriangleList;
-
-	RasterizerDesc rasterizerDesc = {};
-	rasterizerDesc.FillMode = FillMode::Solid;
-	rasterizerDesc.CullMode = CullMode::Back;
-	rasterizerDesc.FaceOrdering = FaceOrdering::Clockwise;
-	rasterizerDesc.DepthBias = 0;
-	rasterizerDesc.DepthClamp = 0.0f;
-	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-	rasterizerDesc.DepthClipEnabled = false;
-	rasterizerDesc.ScissorEnabled = false;
-	rasterizerDesc.MultisampleEnabled = true;
-	rasterizerDesc.AntialiasedLineEnabled = true;
-
-	DepthStencilDesc depthDesc = {};
-	depthDesc.DepthEnable = true;
-	depthDesc.DepthMask = DepthMask::All;
-	depthDesc.DepthCompFunc = DepthStencilComparisonFunc::Less;
-	depthDesc.StencilEnable = false;
-	depthDesc.StencilReadMask = 0xFF;
-	depthDesc.StencilWriteMask = 0xFF;
-
-	BlendStateDesc blendDesc = {};
-	blendDesc.AlphaToCoverageEnable = false;
-	blendDesc.IndependentBlendEnable = true;
-	blendDesc.RenderTargetBlendDescs = {
-					.BlendEnable = false,
-					.SrcBlend = BlendType::One,
-					.DestBlend = BlendType::One,
-					.BlendOp = BlendOperation::Add,
-					.SrcBlendAlpha = BlendType::One,
-					.DestBlendAlpha = BlendType::One,
-					.BlendOpAlpha = BlendOperation::Add,
-					.WriteMask = ColorMask::All
-	};
-
-	PipelineDesc pipelineDesc = {};
-	pipelineDesc.Shaders = { vertexShader, pixelShader };
-	pipelineDesc.InputLayout = inputDesc;
-	pipelineDesc.Rasterizer = rasterizerDesc;
-	pipelineDesc.DepthStencil = depthDesc;
-	pipelineDesc.Blend = blendDesc;
-	pipelineDesc.Sampler = sampler;
-
-	auto pipeline = device->CreatePipeline(pipelineDesc);
-
-	auto commandList = device->CreateCommandList();
-
-	while (window->IsOpen())
+	while (app->IsRunning())
 	{
-		window->ProcessMessage();
+		app->Run();
+		camera->UpdateViewMatrix();
+		camera->HandleInputs(WindowManager::GetInstance().GetWindow()->GetWindowHandle());
 
-		commandList->BindFramebuffer(framebuffer);
-		commandList->BindPipeline(pipeline);
-		commandList->BindVertexBuffer({ });
-		commandList->BindIndexBuffer({});
-		commandList->BindViewport(window->GetWindowSize());
+		app->GetCommandList()->BindPipeline(pipelineObject->GetPipeline());
 
-		const XMFLOAT3 clearColor = { 0.2f , 0.3f, 0.5f };
-		commandList->ClearBuffer(framebuffer, clearColor);
+		for (auto& object : objects)
+		{
+			object->Update();
 
-		commandList->DrawIndexed(indices.size(), 0, 0);
+			app->GetCommandList()->BindVertexBuffer({ object->GetMesh()->GetPositionBuffer(), object->GetMesh()->GetTexCoordBuffer(), object->GetMesh()->GetNormalBuffer()});
+			app->GetCommandList()->BindIndexBuffer({ object->GetMesh()->GetIndexBuffer() });
 
-		device->ExecuteCommandLists({ commandList });
-		device->Present();
+
+			app->GetCommandList()->UpdateDynamicBuffer(object->GetModelCB(), &object->GetModelMatrix(), sizeof(CBData));
+			app->GetCommandList()->BindResources({ object->GetBaseColor()->GetTextureView(), object->GetEmmisive()->GetTextureView(), object->GetNormal()->GetTextureView()}, {pipelineObject->GetSampler()}, {}, ShaderStage::PixelShader);
+			app->GetCommandList()->BindResources({}, {}, { object->GetModelCB() }, ShaderStage::VertexShader);
+
+			app->GetCommandList()->DrawIndexed((uint32)object->GetMesh()->GetIndices().size(), 0, 0);
+		}
+
+		GraphicsManager::GetInstance().GetMainDevice()->ExecuteCommandLists({ app->GetCommandList() });
+		GraphicsManager::GetInstance().GetMainDevice()->Present();
 	}
 
 	return 0;

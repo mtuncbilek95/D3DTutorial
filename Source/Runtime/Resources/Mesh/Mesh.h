@@ -23,19 +23,19 @@ public:
 	void AllocateVertex();
 	void AllocateIndex();
 
-	std::shared_ptr<GraphicsBuffer> GetPositionBuffer() noexcept { return mPositionBuffer; }
-	std::shared_ptr<GraphicsBuffer> GetNormalBuffer() noexcept { return mNormalBuffer; }
-	std::shared_ptr<GraphicsBuffer> GetTangentBuffer() noexcept { return mTangentBuffer; }
-	std::shared_ptr<GraphicsBuffer> GetBinormalBuffer() noexcept { return mBinormalBuffer; }
-	std::shared_ptr<GraphicsBuffer> GetTexCoordBuffer() noexcept { return mTexCoordBuffer; }
-	std::shared_ptr<GraphicsBuffer> GetIndexBuffer() noexcept { return mIndexBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetPositionBuffer() { return mPositionBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetNormalBuffer() { return mNormalBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetTangentBuffer() { return mTangentBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetBinormalBuffer() { return mBinormalBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetTexCoordBuffer() { return mTexCoordBuffer; }
+	std::shared_ptr<GraphicsBuffer> GetIndexBuffer() { return mIndexBuffer; }
 
-	std::vector<XMFLOAT3>& GetPositions() noexcept { return mPositions; }
-	std::vector<XMFLOAT3>& GetNormals() noexcept { return mNormals; }
-	std::vector<XMFLOAT3>& GetTangents() noexcept { return mTangents; }
-	std::vector<XMFLOAT3>& GetBinormals() noexcept { return mBinormals; }
-	std::vector<XMFLOAT2>& GetTexCoords() noexcept { return mTexCoords; }
-	std::vector<uint16>& GetIndices() noexcept { return mIndices; }
+	std::vector<XMFLOAT3>& GetPositions() { return mPositions; }
+	std::vector<XMFLOAT3>& GetNormals() { return mNormals; }
+	std::vector<XMFLOAT3>& GetTangents() { return mTangents; }
+	std::vector<XMFLOAT3>& GetBinormals() { return mBinormals; }
+	std::vector<XMFLOAT2>& GetTexCoords() { return mTexCoords; }
+	std::vector<uint16>& GetIndices() { return mIndices; }
 
 private:
 	std::vector<XMFLOAT3> mPositions;
