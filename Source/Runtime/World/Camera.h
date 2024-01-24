@@ -26,6 +26,7 @@ public:
 		mProjection = XMMatrixPerspectiveFovLH(XMConvertToRadians(74.0f), mAspectRatio, 0.1f, 100.0f);
 	}
 
+	XMFLOAT3 GetPosition() { return mPosition; }
 	XMMATRIX& GetViewMatrix() { return mView; }
 	XMMATRIX& GetProjectionMatrix() { return mProjection; }
 

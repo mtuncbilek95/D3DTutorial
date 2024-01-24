@@ -10,7 +10,19 @@
 #include <Runtime/World/Helmet.h>
 #include <Runtime/World/Lantern.h>
 
+#include <Runtime/Graphics/Buffer/GraphicsBuffer.h>
+#include <Runtime/Graphics/Pipeline/Pipeline.h>
 std::vector<std::shared_ptr<GameObject>> objects;
+
+struct LightCBData
+{
+	XMFLOAT3 ambientColor;
+	float ambientIntensity;
+
+	XMFLOAT3 lightColor;
+	float lightIntensity;
+	XMFLOAT3 lightPosition;
+};
 
 int main()
 {
@@ -24,6 +36,25 @@ int main()
 	auto lantern = std::make_shared<Lantern>();
 	objects.push_back(lantern);
 
+	LightCBData lightData = {};
+	lightData.ambientColor = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	lightData.ambientIntensity = 0.1f;
+	lightData.lightColor = { 0.3f, 0.7f, 0.2f };
+	lightData.lightIntensity = 1.0f;
+	lightData.lightPosition = { 0.0f, 0.0f, 0.0f };
+
+	GraphicsBufferDesc lightDesc = {};
+	lightDesc.ResourceUsage = ResourceUsage::DYNAMIC;
+	lightDesc.CPUAccess = BufferCPUAccess::WRITE;
+	lightDesc.Usage = BufferUsage::CONSTANT_BUFFER;
+	lightDesc.SizeInBytes = sizeof(LightCBData);
+	lightDesc.StructureByteStride = sizeof(LightCBData);
+	lightDesc.MiscFlags = 0;
+	lightDesc.InitialData = &lightData;
+
+	auto lightCB = GraphicsManager::GetInstance().GetMainDevice()->CreateGraphicsBuffer(lightDesc);
+
+
 	while (app->IsRunning())
 	{
 		app->Run();
@@ -32,6 +63,29 @@ int main()
 
 		app->GetCommandList()->BindPipeline(pipelineObject->GetPipeline());
 
+		if(glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_R) == GLFW_PRESS)
+			lightData.lightPosition = camera->GetPosition();
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_1) == GLFW_PRESS)
+			lightData.lightColor = { 1.0f, 0.0f, 0.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_2) == GLFW_PRESS)
+			lightData.lightColor = { 0.0f, 1.0f, 0.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_3) == GLFW_PRESS)
+			lightData.lightColor = { 0.0f, 0.0f, 1.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_5) == GLFW_PRESS)
+			lightData.lightColor = { 1.0f, 1.0f, 1.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_6) == GLFW_PRESS)
+			lightData.lightColor = { 0.0f, 0.0f, 0.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_7) == GLFW_PRESS)
+			lightData.lightColor = { 1.0f, 1.0f, 0.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_8) == GLFW_PRESS)
+			lightData.lightColor = { 0.0f, 1.0f, 1.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_9) == GLFW_PRESS)
+			lightData.lightColor = { 1.0f, 0.0f, 1.0f };
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_F1) == GLFW_PRESS)
+			pipelineObject->GetPipeline()->SetPrimitiveMode(PrimitiveMode::TriangleList);
+		if (glfwGetKey(WindowManager::GetInstance().GetWindow()->GetWindowHandle(), GLFW_KEY_F2) == GLFW_PRESS)
+			pipelineObject->GetPipeline()->SetPrimitiveMode(PrimitiveMode::LineList);
+			
 		for (auto& object : objects)
 		{
 			object->Update();
@@ -41,7 +95,8 @@ int main()
 
 
 			app->GetCommandList()->UpdateDynamicBuffer(object->GetModelCB(), &object->GetModelMatrix(), sizeof(CBData));
-			app->GetCommandList()->BindResources({ object->GetBaseColor()->GetTextureView(), object->GetEmmisive()->GetTextureView(), object->GetNormal()->GetTextureView()}, {pipelineObject->GetSampler()}, {}, ShaderStage::PixelShader);
+			app->GetCommandList()->UpdateDynamicBuffer(lightCB, &lightData, sizeof(LightCBData));
+			app->GetCommandList()->BindResources({ object->GetBaseColor()->GetTextureView(), object->GetEmmisive()->GetTextureView(), object->GetNormal()->GetTextureView()}, {pipelineObject->GetSampler()}, { lightCB }, ShaderStage::PixelShader);
 			app->GetCommandList()->BindResources({}, {}, { object->GetModelCB() }, ShaderStage::VertexShader);
 
 			app->GetCommandList()->DrawIndexed((uint32)object->GetMesh()->GetIndices().size(), 0, 0);

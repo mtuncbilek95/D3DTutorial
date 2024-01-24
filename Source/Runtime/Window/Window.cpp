@@ -4,7 +4,7 @@
 
 Window::Window()
 {
-	mWindowSize = { 1920, 1080 };
+	mWindowSize = { 2560, 1440 };
 	mPosition = { 0, 0 };
 	mTitle = "Rendering Engine";
 	mIsFullscreen = false;
@@ -13,7 +13,7 @@ Window::Window()
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	mWindow = glfwCreateWindow(mWindowSize.x, mWindowSize.y, mTitle.c_str(), nullptr, nullptr);
+	mWindow = glfwCreateWindow(mWindowSize.x, mWindowSize.y, mTitle.c_str(), glfwGetPrimaryMonitor(), nullptr);
 
 	DEV_ASSERT(mWindow, "Window", "Failed to create window.");
 
