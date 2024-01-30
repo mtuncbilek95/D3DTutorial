@@ -1,4 +1,5 @@
 # DIRECT-X 11 COURSE SCHEDULE
+This is the course I have made.
 ## SECTION 1: INTRODUCTION TO WINDOW CREATION
 - Basic Introduction to Project
 - Initializing The Project Settings 
